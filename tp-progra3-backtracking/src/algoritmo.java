@@ -37,15 +37,12 @@ public class algoritmo implements PlanificarCultivos {
         }
 
         Cultivo cultivo = cultivos.get(index);
-        for (int parcela = 0; parcela < fielSize; parcela++) {
-            CultivoSeleccionado cultivoSeleccionado = new CultivoSeleccionado(//todo cambiar a constructor
-                           );
-            currentPlan.add(cultivoSeleccionado);
-            backtrack(cultivos, rendimiento, index + 1, currentPlan, mejorPlanificacion);
-            currentPlan.remove(currentPlan.size() - 1);
-        }
+        //for () {
+        //todo lo que falta es controlar la cantidad de cultivos por parcela y los tamaños de las parcelas
+
         backtrack(cultivos, rendimiento, index + 1, currentPlan, mejorPlanificacion);
     }
+    //todo falta la validacion del segundo backtracking para los cultivos repetidos
 
     private double calcularRendimiento(List<CultivoSeleccionado> plan, double[][] rendimiento) {
         double totalRendimiento = 0;
