@@ -1,5 +1,6 @@
 package Project;
 
+import Lib.Coordenada;
 import Lib.Cultivo;
 import Lib.CultivoSeleccionado;
 import Lib.PlanificarCultivos;
@@ -25,7 +26,32 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         return null;
     }
 
-    private double obtenerPlan(List<Cultivo> CultivosDisponibles, double[][] riesgos, String temporada, int indiceCultivo, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
+    private double obtenerPlan(List<Cultivo> cultivosDisponibles, double[][] riesgos, String temporada, int indiceCultivo, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
+        if (indiceCultivo == cultivosDisponibles.size()){ // esta parte deberia comentarse para las pruebas unitarias de obtener plan
+            for (Cultivo cultivo : cultivosDisponibles){
+                String temporadaOptivaCultivo = cultivo.getTemporadaOptima();
+                if (temporadaOptivaCultivo.equals(temporada)){
+                    mayorBeneficio = repetirCultivo(cultivo, riesgos,campo,mayorBeneficio,campoResultado);
+                }
+            }
+        }else {
+            String temporadaOptivaCultivo = cultivosDisponibles.get(indiceCultivo).getTemporadaOptima();
+            if (temporadaOptivaCultivo.equals(temporada)){
+                Cultivo cultivo = cultivosDisponibles.get(indiceCultivo);
+                List<CoordenadaCultivo> coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo);
+
+                for (CoordenadaCultivo coordenadas : coordenadasValidas){
+                    Coordenada esquinaSuperiorIzquierda = coordenadas.getEsquinaSuperiorIzquierda();
+                    Coordenada esquinaInferiorDerecha = coordenadas.getEsquinaInferiorDerecha();
+                    
+                    mayorBeneficio = obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo + 1, campo, mayorBeneficio, campoResultado);
+                }
+            }
+        }
+        return 0;
+    }
+
+    private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
 
         return 0;
     }
