@@ -4,6 +4,7 @@ import Lib.Coordenada;
 import Lib.Cultivo;
 import Lib.CultivoSeleccionado;
 import Lib.PlanificarCultivos;
+import Project.MetodoAuxiliarCampo;
 
 import java.util.List;
 
@@ -43,12 +44,15 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
                 for (CoordenadaCultivo coordenadas : coordenadasValidas){
                     Coordenada esquinaSuperiorIzquierda = coordenadas.getEsquinaSuperiorIzquierda();
                     Coordenada esquinaInferiorDerecha = coordenadas.getEsquinaInferiorDerecha();
-                    
+                    MetodoAuxiliarCampo.agregarCultivo(campo,esquinaSuperiorIzquierda,esquinaInferiorDerecha, cultivo);
                     mayorBeneficio = obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo + 1, campo, mayorBeneficio, campoResultado);
+                    MetodoAuxiliarCampo.sacarCultivo(campo,esquinaSuperiorIzquierda,esquinaInferiorDerecha);
                 }
+            }else{
+                mayorBeneficio = obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo + 1, campo, mayorBeneficio, campoResultado);
             }
         }
-        return 0;
+        return mayorBeneficio;
     }
 
     private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
