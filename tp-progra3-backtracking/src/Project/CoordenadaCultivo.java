@@ -12,6 +12,7 @@ public class CoordenadaCultivo {
         this.esquinaInferiorDerecha = esquinaInferiorDerecha;
     }
 
+
     public Coordenada getEsquinaSuperiorIzquierda() {
         return esquinaSuperiorIzquierda;
     }

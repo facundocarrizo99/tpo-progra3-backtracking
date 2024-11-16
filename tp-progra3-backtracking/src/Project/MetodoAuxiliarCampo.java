@@ -51,4 +51,5 @@ public  class  MetodoAuxiliarCampo {
         beneficio = beneficio -inversionTotal;
         return beneficio;
     }
+
 }
