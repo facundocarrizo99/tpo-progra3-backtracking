@@ -3,6 +3,8 @@ package Project;
 import Lib.Coordenada;
 import Lib.Cultivo;
 
+import java.util.List;
+
 public class MetodoAuxiliarCoordenada {
     public static Boolean validarCoordenadas(Cultivo[][] campo, CoordenadaCultivo x, CoordenadaCultivo y) {
         Coordenada esquinaSuperior = x.getEsquinaSuperiorIzquierda();
@@ -35,6 +37,8 @@ public class MetodoAuxiliarCoordenada {
     }
 
     ///// Obtener coordenadas validas 
+    public static List<CoordenadaCultivo> obtenerCoordenadasValidas(Cultivo[][] campo, Cultivo){
 
+    }
 }
 
