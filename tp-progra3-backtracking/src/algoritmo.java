@@ -13,7 +13,7 @@ public class algoritmo implements PlanificarCultivos {
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> cultivos, double[][] rendimiento, String temporada) {
         List<Cultivo> cultivosTemporada = new ArrayList<>();
         for (Cultivo cultivo : cultivos) {
-            if (cultivo.getTemporada().equals(temporada)) {
+            if (cultivo.getTemporadaOptima().equals(temporada)) {
                 cultivosTemporada.add(cultivo);
             }
         }
