@@ -24,9 +24,14 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         Cultivo[][] campoResultado = new Cultivo[filas][columnas];
 
         obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo, campo, mayorBeneficio, campoResultado);
+        //TODO El metodo obtenerPlan cambia el valor por referencia de campoResultado con el mejor resultado.
+        // Hay que tranformar esa matriz en una lista de CultivosSeleccionados,
+        // dentro de la matriz campo resultado hay cultivos, hay que recorrerla y hacer la conversion a lo que pide la profe
         return null;
     }
-
+    //TODO hay que hacer los test unitarios para probar el backtraking
+    // Se hizo lo posible para que no haya nullpointerExecp pero hay que validar que haga lo que tiene que hacer
+    // recomiendo hacer un metodo para imprimir la matriz de cultivos para ver si lo esta haciendo bien.
     private double obtenerPlan(List<Cultivo> cultivosDisponibles, double[][] riesgos, String temporada, int indiceCultivo, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
         if (indiceCultivo == cultivosDisponibles.size()){ // esta parte deberia comentarse para las pruebas unitarias de obtener plan
             for (Cultivo cultivo : cultivosDisponibles){
@@ -39,7 +44,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             String temporadaOptivaCultivo = cultivosDisponibles.get(indiceCultivo).getTemporadaOptima();
             if (temporadaOptivaCultivo.equals(temporada)){
                 Cultivo cultivo = cultivosDisponibles.get(indiceCultivo);
-                List<CoordenadaCultivo> coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo);
+                List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidas(campo, cultivo);
 
                 for (CoordenadaCultivo coordenadas : coordenadasValidas){
                     Coordenada esquinaSuperiorIzquierda = coordenadas.getEsquinaSuperiorIzquierda();
@@ -56,7 +61,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     }
 
     private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
-        List<CoordenadaCultivo> coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo);
+        List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidas(campo, cultivo);
         if (coordenadasValidas.isEmpty()){
             double beneficioActual = MetodoAuxiliarCampo.calcularBeneficio(campo, riesgos);
             if (beneficioActual > mayorBeneficio){

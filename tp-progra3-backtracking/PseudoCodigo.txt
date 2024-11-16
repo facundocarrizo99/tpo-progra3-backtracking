@@ -1,0 +1,148 @@
+Función obtenerPlanificacion
+    Entrada: cultivos: vector<cultivo>, riesgos: matriz<double>, temporada: String, indiceCultivo: entero, campo: matriz<enteros>, mayorBeneficio: double (Referencia)
+    Salida: campoResultado: matriz<enteros>
+
+    Si indiceCultivo == longitud<cultivo> entonces:
+        Para i = 0 hasta longitud(cultivos)
+            Si cultivos[i].temporada == temporada entonces:
+                campoResultado = repetirCultivo(cultivos[i], riegos, campo, mayorBeneficio)
+            FinSi
+        FinPara
+    SiNo:
+        Si cultivos[indiceCultivo].temporada == temporada entonces:
+	        cultivo = cultivos[indiceCultivo]
+	        coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo)
+            
+	        Para i = 0 hasta longitud(coordenadasValidas):
+	            esquinaSuperior = coordenadasValidas[i].coordenadaEsquinaSuperiorIzquierda
+      	        esquinaInferior = coordenadasValidas[i].coordenadaEsquinaInferiorDerecha
+      	        agregarCultivo(campo, esquinaSuperior,  esquinaInferior, cultivo)
+                valMayor = calcularBeneficio()
+	            campoResultado = obtenerPlanificacion(cultivos, riesgo, temporada, indiceCultivo + 1, campo, mayorBeneficio)
+	            sacarCultivo(campo, esquinaSuperior,  esquinaInferior, cultivo)
+	        FinPara
+        SiNo
+	        campoResultado = obtenerPlanificacion(cultivos, riesgo, temporada, indiceCultivo + 1, campo, mayorBeneficio)
+        FinSi
+        devolver copia(campoResultado)
+    FinSi
+FinFunción
+
+Función repetirCultivo
+    Entrada: cultivo: cultivo, riesgos: matriz<double>, campo: matriz<entero>, mayorBeneficio: double (Referencia)
+    Salida: campoResultado: matriz<entero>
+
+    Si campoLleno entonces:
+        beneficioActual = calcularBeneficios(cultivo, riesgos, campo)
+        Si beneficioActual > mayorBeneficio entonces:
+            mayorBeneficio = beneficioActual
+            campoResultado = copia(campo)
+            devolver campoResultado
+        FinSi
+    SiNo
+        coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo)
+
+        para i = 0 hasta longitud(coordenadasValidas) hacer:
+            esquinaSuperior = coordenadasValidas[i].coordenadaEsquinaSuperiorIzquierda
+            esquinaInferior = coordenadasValidas[i].coordenadaEsquinaInferiorDerecha
+           
+            agregarCultivo(campo, esquinaSuperior, esquinaInferior, cultivo)
+
+            campoResultado = repetirCultivo(cultivo, riesgos, campo, mayorBeneficio)
+
+            sacarCultivo(campo, esquinaSuperior, esquinaInferior)
+        FinPara
+    FinSi
+    devolver campoResultado
+FinFuncion
+
+Función agregarCultivo
+    Entrada: campo: matriz<entero>, esquinaSuperior: coordenada(fila,columna), esquinaInferior: coordenada (fila,columna), cultivo: cultivo
+   
+    Para i = esquinaSuperior.fila hasta esquinaInferior.fila hacer:
+        Para j = esquinaSuperior.columna hasta esquinaInferior.columna hacer:
+	        campo[i][j] = cultivo.ID
+        FinPara
+    FinPara
+FinFuncion
+
+Función  sacarCultivo
+    Entrada: campo: matriz<entero>, esquinaSuperior: coordenada(fila,columna), esquinaInferior: coordenada (fila,columna)
+   
+    Para i = esquinaSuperior.fila hasta esquinaInferior.fila hacer:
+        Para j = esquinaSuperior.columna hasta esquinaInferior.columna hacer:
+	        campo[i][j] = 0
+        FinPara
+    FinPara
+FinFuncion
+
+Función calcularBeneficio
+    Entrada: cultivo: cultivo, riesgo: matriz<double>, campo: matriz<enteros>
+
+    beneficio = 0
+    Para i = 0 hasta cantidadFilas(campo) hacer:
+        Para j = 0 hasta cantidadColumnas(campo) hacer:
+            Si campo[i][j] >= 0 entonces: 
+               riesgoParcela = riesgo[i][j]
+               potencialParcela = (1 - riesgoParcela) * ((cultivo.precioPorUnidad * 							         cultivo.unidadesProducidasPorParcela) - cultivo.costoPorParcela)
+               beneficio = beneficio + potencialParcela
+            FinSi
+        FinPara
+    FinPara
+FinFuncion
+
+Función obtenerCoordenadasValidas
+    Entrada: campo: matriz<entero>, cultivo: cultivo
+    Salida: posiciónValidas: vector<coordenada>
+
+    posicionesValidas: vector<coordenada>
+    Para i = 0 hasta cantidadFilas(campo) hacer:
+        Para j = 0 hasta cantidadColumnas(campo) hacer:
+            coordenadaEsquinaSuperiorIzquierda = (i,j);
+
+            Para limite = 2 hasta 11 hacer:
+                Para n = 1 hasta limite - 1 hacer:
+                    m = limite - n
+                    coordenadaEsquinaInferiorDerecha = (i+n, j+m)
+                    Si validarCoordenadas(campo, coordenadaEsquinaSuperiorIzquierda, coordenadaEsquinaInferiorDerecha) entonces
+                        posicionesValidas.agregarCoordenadas(coordenadaEsquinaSuperiorIzquierda, coordenadaEsquinaInferiorDerecha)
+                    FinSi
+                FinPara
+            FinPara
+        FinPara
+    FinPara
+
+    devolver posicionesValidas
+FinFuncion
+
+
+Función validarCoordenadas
+    Entrada: campo: matriz<entero>, esquinaSuperior: coordenada(fila,columna), esquinaInferior: coordenada (fila,columna), cultivoID: entero
+
+    Si esquinaSuperior.fila < 0 o esquinaSuperior.columna < 0 o 
+        esquinaInferior.fila >= cantidadFilas(campo) o esquinaInferior.columna >= cantidadColumnas(campo)    entonces:
+        devolver Falso
+
+    Para i = esquinaSuperior.fila hasta esquinaInferior.fila hacer:
+        Para j = esquinaSuperior.columna hasta esquinaInferior.columna hacer:
+            Si campo[i][j] != -1 entonces:
+                devolver Falso  // Hay otro cultivo en esta posición
+            FinSi
+        FinPara
+    FinPara
+
+    Para i = esquinaSuperior.fila hasta esquinaInferior.fila hacer:
+        Si campo[i – 1][esquinaSuperior.columna] == cultivoID o campo[i + 1][esquinaInferior.columna] entonces:
+	        devolver Falso
+        FinSi
+    FinPara
+
+    Para j = esquinaSuperior.columna hasta esquinaInferior.columna hacer:
+        Si campo[esquinaSuperior.fila][j-1] == cultivoID o campo[esquinaInferior.fila][j+1] == cultivoID entonces:
+	        devolver Falso
+        FinSi
+    FinPara
+
+    devolver Verdadero
+FinFuncion
+	 
