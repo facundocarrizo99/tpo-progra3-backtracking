@@ -3,7 +3,7 @@ package Project;
 import Lib.Coordenada;
 import Lib.Cultivo;
 
-public static class  MetodoAuxiliarCampo {
+public class  MetodoAuxiliarCampo {
 
     public static void sacarCultivo(Cultivo[][] campo, Coordenada coordenadaSuperiorIzq, Coordenada coordenadaInferiorDer){
 
