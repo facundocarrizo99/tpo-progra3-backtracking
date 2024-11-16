@@ -56,7 +56,26 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     }
 
     private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
+        List<CoordenadaCultivo> coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo);
+        if (coordenadasValidas.isEmpty()){
+            double beneficioActual = MetodoAuxiliarCampo.calcularBeneficio(campo, riesgos);
+            if (beneficioActual > mayorBeneficio){
+                mayorBeneficio = beneficioActual;
 
+            }
+        }
         return 0;
+    }
+
+    private Cultivo[][] copiarCampo(Cultivo[][] campo){
+        int filas = campo.length;
+        int columnas = campo[0].length;
+
+        Cultivo[][] copia = new Cultivo[filas][columnas];
+        for (int i = 0; i <= filas; i++){
+            for(int j=0; j<= columnas; j++){
+                
+            }
+        }
     }
 }
