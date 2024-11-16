@@ -56,7 +56,35 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     }
 
     private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado){
+        List<CoordenadaCultivo> coordenadasValidas = obtenerCoordenadasValidas(campo, cultivo);
+        if (coordenadasValidas.isEmpty()){
+            double beneficioActual = MetodoAuxiliarCampo.calcularBeneficio(campo, riesgos);
+            if (beneficioActual > mayorBeneficio){
+                mayorBeneficio = beneficioActual;
+                campoResultado = copiarCampo(campo); //no se usa porque solo se necesita cambiar su valor por referencia, se utiliza en un metodo mas arriba
+            }
+        }else{
+            for(CoordenadaCultivo coordenadaCultivo : coordenadasValidas){
+                Coordenada esquinaSuperiorIzquierda = coordenadaCultivo.getEsquinaSuperiorIzquierda();
+                Coordenada esquinaInferiorDerecha = coordenadaCultivo.getEsquinaInferiorDerecha();
+                MetodoAuxiliarCampo.agregarCultivo(campo, esquinaSuperiorIzquierda, esquinaInferiorDerecha,cultivo);
+                mayorBeneficio = repetirCultivo(cultivo,riesgos,campo,mayorBeneficio,campoResultado);
+                MetodoAuxiliarCampo.sacarCultivo(campo,esquinaSuperiorIzquierda, esquinaInferiorDerecha);
+            }
+        }
+        return mayorBeneficio;
+    }
 
-        return 0;
+    private Cultivo[][] copiarCampo(Cultivo[][] campo) {
+        int filas = campo.length;
+        int columnas = campo[0].length;
+
+        Cultivo[][] copia = new Cultivo[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                copia[i][j] = campo[i][j];
+            }
+        }
+        return copia;
     }
 }
