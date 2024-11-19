@@ -10,11 +10,14 @@ public class MetodoAuxiliarCoordenada {
     private static Boolean validarCoordenadas(Cultivo[][] campo, CoordenadaCultivo coordenadaCultivo, Cultivo cultivo) {
         Coordenada esquinaSuperior = coordenadaCultivo.getEsquinaSuperiorIzquierda();
         Coordenada esquinaInferior = coordenadaCultivo.getEsquinaInferiorDerecha();
+        int maximoX = campo.length;
+        int maximoY = campo[0].length;
 
         if (esquinaSuperior.getX() < 0 || esquinaSuperior.getY() < 0) {
             return false;
         }
-        if (esquinaInferior.getX() >= campo.length || esquinaInferior.getY() >= campo[0].length) {
+
+        if (esquinaInferior.getX() >= maximoX || esquinaInferior.getY() >= maximoY) {
             return false;
         }
 
@@ -31,22 +34,22 @@ public class MetodoAuxiliarCoordenada {
         int y2 = esquinaInferior.getY();
 
         for (int j = y1; j <= y2; j++) {
-            if (x1 > 0 && campo[x1 - 1][j].getNombre().equals(cultivo.getNombre())) {
+            if (x1 > 0 && campo[x1 - 1][j] != null && campo[x1 - 1][j].getNombre().equals(cultivo.getNombre())) {
+                return false;
+            }
+        }
+        for (int i = x1; i <= x2; i++) {
+            if (y1 > 0 && campo[i][y1 - 1] != null && campo[i][y1 - 1].getNombre().equals(cultivo.getNombre())) {
                 return false;
             }
         }
         for (int j = y1; j <= y2; j++) {
-            if (x2 < campo.length - 1 && campo[x2 + 1][j].getNombre().equals(cultivo.getNombre())) {
+            if (x2 < maximoX - 1 && campo[x2][j] != null && campo[x2][j].getNombre().equals(cultivo.getNombre())) {
                 return false;
             }
         }
         for (int i = x1; i <= x2; i++) {
-            if (y1 > 0 && campo[i][y1 - 1].getNombre().equals(cultivo.getNombre())) {
-                return false;
-            }
-        }
-        for (int i = x1; i <= x2; i++) {
-            if (y2 < campo[0].length - 1 && campo[i][y2 + 1].getNombre().equals(cultivo.getNombre())) {
+            if (y2 < maximoY - 1 && campo[i][y2] != null && campo[i][y2].getNombre().equals(cultivo.getNombre())) {
                 return false;
             }
         }
