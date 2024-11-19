@@ -65,7 +65,7 @@ public class MetodoAuxiliarCoordenada {
             for (int j = 0; j < columnas; j++) {
                 Coordenada esquinaSuperiorIzquierda = new Coordenada(i,j);
 
-                for(int limite = 2; limite <= 11; limite++){
+                for(int limite = 9; limite <= 11; limite++){
                         for (int ancho = 1; ancho < limite; ancho++) {
                             int altura = limite - ancho;
                             int x2 = i + (altura - 1);
