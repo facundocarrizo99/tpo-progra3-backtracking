@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MetodoAuxiliarCoordenada {
-    private static Boolean validarCoordenadas(Cultivo[][] campo, CoordenadaCultivo coordenadaCultivo, Cultivo cultivo) {
+    public static Boolean validarCoordenadas(Cultivo[][] campo, CoordenadaCultivo coordenadaCultivo, Cultivo cultivo) {
         Coordenada esquinaSuperior = coordenadaCultivo.getEsquinaSuperiorIzquierda();
         Coordenada esquinaInferior = coordenadaCultivo.getEsquinaInferiorDerecha();
         int maximoX = campo.length;
@@ -60,13 +60,11 @@ public class MetodoAuxiliarCoordenada {
         List<CoordenadaCultivo> posicionesValidas = new ArrayList<>();
         int filas = campo.length;
         int columnas = campo[0].length;
-
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
                 Coordenada esquinaSuperiorIzquierda = new Coordenada(i,j);
-
-                for(int limite = 9; limite <= 11; limite++){
-                        for (int ancho = 1; ancho < limite; ancho++) {
+                for(int limite = 11; limite <= 11; limite++){
+                        for (int ancho = 6; ancho > 0; ancho--) {
                             int altura = limite - ancho;
                             int x2 = i + (altura - 1);
                             int y2 = j + (ancho - 1);
@@ -76,6 +74,35 @@ public class MetodoAuxiliarCoordenada {
                                 posicionesValidas.add(coordenadaCultivo);
                             }
                         }
+                }
+            }
+        }
+        return posicionesValidas;
+    }
+
+    public static List<CoordenadaCultivo> obtenerCoordenadasValidasParaRepetir(Cultivo[][] campo, Cultivo cultivo){
+        List<CoordenadaCultivo> posicionesValidas = new ArrayList<>();
+        int filas = campo.length;
+        int columnas = campo[0].length;
+        int limiteCantidad= 10;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                Coordenada esquinaSuperiorIzquierda = new Coordenada(i,j);
+
+                for(int limite = 11; limite <= 11; limite++){
+                    for (int ancho = 6; ancho > 0; ancho--) {
+                        int altura = limite - ancho;
+                        int x2 = i + (altura - 1);
+                        int y2 = j + (ancho - 1);
+                        if (posicionesValidas.size() == 3){
+                            return posicionesValidas;
+                        }
+                        Coordenada esquinaInferiorDerecha = new Coordenada(x2, y2);
+                        CoordenadaCultivo coordenadaCultivo = new CoordenadaCultivo(esquinaSuperiorIzquierda,esquinaInferiorDerecha);
+                        if (validarCoordenadas(campo, coordenadaCultivo, cultivo)){
+                            posicionesValidas.add(coordenadaCultivo);
+                        }
+                    }
                 }
             }
         }

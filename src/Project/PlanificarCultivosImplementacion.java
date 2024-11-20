@@ -6,9 +6,12 @@ import Lib.CultivoSeleccionado;
 import Lib.PlanificarCultivos;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PlanificarCultivosImplementacion implements PlanificarCultivos {
+    private Cultivo[][] campoResultado;
 
     @Override
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> cultivosDisponibles, double[][] riesgos, String temporada) {
@@ -21,10 +24,17 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         int indiceCultivo = 0;
         double mayorBeneficio = 0;
         Cultivo[][] campo = new Cultivo[filas][columnas];
-        Cultivo[][] campoResultado = new Cultivo[filas][columnas];
+        campoResultado = new Cultivo[filas][columnas];
+        Set<Coordenada> coordenadasVisitadas = new HashSet<>();
 
-        obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo, campo, mayorBeneficio, campoResultado);
+        mayorBeneficio = obtenerPlan(cultivosDisponibles, riesgos, temporada, indiceCultivo, campo, mayorBeneficio, campoResultado);
+        for (Cultivo cultivo: cultivosDisponibles){
+            if(cultivo.getTemporadaOptima().equals(temporada)){
+                repetirCultivo(cultivo,riesgos,campo, mayorBeneficio, this.campoResultado,coordenadasVisitadas);
+            }
+        }
         imprimirMatriz(campoResultado);
+
         return interpretarMatrizCampo(campoResultado, riesgos);
     }
 
@@ -32,19 +42,19 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     // Se hizo lo posible para que no haya nullpointerExecp pero hay que validar que haga lo que tiene que hacer
     // recomiendo hacer un metodo para imprimir la matriz de cultivos para ver si lo esta haciendo bien.
     private double obtenerPlan(List<Cultivo> cultivosDisponibles, double[][] riesgos, String temporada, int indiceCultivo, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado) {
+        System.out.println(indiceCultivo);
         if (indiceCultivo == cultivosDisponibles.size()) { // esta parte deberia comentarse para las pruebas unitarias de obtener plan
-            for (Cultivo cultivo : cultivosDisponibles) {
-                String temporadaOptivaCultivo = cultivo.getTemporadaOptima();
-                if (temporadaOptivaCultivo.equals(temporada)) {
-                    mayorBeneficio = repetirCultivo(cultivo, riesgos, campo, mayorBeneficio, campoResultado);
-                }
+            double beneficioActual = MetodoAuxiliarCampo.calcularBeneficio(campo,riesgos);
+            if(beneficioActual > mayorBeneficio){
+                mayorBeneficio = beneficioActual;
+                this.campoResultado = copiarCampo(campo);
+                System.out.println(mayorBeneficio);
             }
         } else {
             String temporadaOptivaCultivo = cultivosDisponibles.get(indiceCultivo).getTemporadaOptima();
             if (temporadaOptivaCultivo.equals(temporada)) {
                 Cultivo cultivo = cultivosDisponibles.get(indiceCultivo);
-                List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidas(campo, cultivo);
-
+                List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidas(campo, cultivosDisponibles.get(indiceCultivo));
                 for (CoordenadaCultivo coordenadas : coordenadasValidas) {
                     Coordenada esquinaSuperiorIzquierda = coordenadas.getEsquinaSuperiorIzquierda();
                     Coordenada esquinaInferiorDerecha = coordenadas.getEsquinaInferiorDerecha();
@@ -59,23 +69,31 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         return mayorBeneficio;
     }
 
-    private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado) {
-        List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidas(campo, cultivo);
+    private double repetirCultivo(Cultivo cultivo, double[][] riesgos, Cultivo[][] campo, double mayorBeneficio, Cultivo[][] campoResultado, Set<Coordenada> coordenadasProbadas) {
+        List<CoordenadaCultivo> coordenadasValidas = MetodoAuxiliarCoordenada.obtenerCoordenadasValidasParaRepetir(campo, cultivo);
         if (coordenadasValidas.isEmpty()) {
             double beneficioActual = MetodoAuxiliarCampo.calcularBeneficio(campo, riesgos);
             if (beneficioActual > mayorBeneficio) {
                 mayorBeneficio = beneficioActual;
-                campoResultado = copiarCampo(campo); //no se usa porque solo se necesita cambiar su valor por referencia, se utiliza en un metodo mas arriba
+                this.campoResultado = copiarCampo(campo); //no se usa porque solo se necesita cambiar su valor por referencia, se utiliza en un metodo mas arriba
+                System.out.println(mayorBeneficio);
             }
         } else {
             for (CoordenadaCultivo coordenadaCultivo : coordenadasValidas) {
                 Coordenada esquinaSuperiorIzquierda = coordenadaCultivo.getEsquinaSuperiorIzquierda();
                 Coordenada esquinaInferiorDerecha = coordenadaCultivo.getEsquinaInferiorDerecha();
+                if (coordenadasProbadas.contains(esquinaSuperiorIzquierda)) {
+                    continue; // Saltar si ya se probó esta coordenada
+                }
+                // Marcar coordenada como probada
+                coordenadasProbadas.add(esquinaSuperiorIzquierda);
                 MetodoAuxiliarCampo.agregarCultivo(campo, esquinaSuperiorIzquierda, esquinaInferiorDerecha, cultivo);
-                mayorBeneficio = repetirCultivo(cultivo, riesgos, campo, mayorBeneficio, campoResultado);
+                mayorBeneficio = repetirCultivo(cultivo, riesgos, campo, mayorBeneficio, campoResultado, coordenadasProbadas);
                 MetodoAuxiliarCampo.sacarCultivo(campo, esquinaSuperiorIzquierda, esquinaInferiorDerecha);
             }
         }
+        imprimirMatriz(campo);
+        System.out.println("\n\n");
         return mayorBeneficio;
     }
 
@@ -135,7 +153,11 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     private void imprimirMatriz(Cultivo[][] campo){
         for (int i = 0; i < campo.length; i++) {
             for (int j = 0; j < campo[0].length; j++) {
-                System.out.print(campo[i][j] + " ");
+                if(campo[i][j] != null){
+                    System.out.print(" ["+campo[i][j].getNombre() + "] ");
+                }else{
+                    System.out.print(" [Vacio] ");
+                }
             }
             System.out.println();
         }
